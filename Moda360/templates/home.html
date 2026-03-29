@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>MODA 360 | Tienda Premium</title>
+				<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+					<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+						<style>
+							body { font-family: 'Montserrat', sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; }
+							a { text-decoration: none; transition: 0.3s ease; }
+
+							/* BARRA SUPERIOR */
+							.navbar-custom {
+							background-color: #ffffff;
+							box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+							padding: 15px 0;
+							display: flex;
+							align-items: center;
+							position: sticky;
+							top: 0;
+							z-index: 1000;
+							}
+							.container {
+							width: 90%;
+							margin: 0 auto;
+							max-width: 1200px;
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+							}
+							.navbar-brand {
+							font-family: 'Playfair Display', serif;
+							font-size: 1.8rem;
+							color: #000;
+							letter-spacing: 2px;
+							font-weight: 700;
+							}
+							.navbar-nav {
+							display: flex;
+							gap: 25px;
+							list-style: none;
+							margin: 0;
+							padding: 0;
+							}
+
+							@media (max-width: 768px) {
+							.navbar-nav { display: none; }
+							}
+
+							.nav-link {
+							color: #555;
+							text-transform: uppercase;
+							font-size: 0.85rem;
+							letter-spacing: 1px;
+							font-weight: 400;
+							}
+							.nav-link:hover { color: #000; }
+							.auth-buttons { display: flex; align-items: center; gap: 15px; }
+							.login-link { color: #000; font-weight: 700; font-size: 0.85rem; }
+							.btn-register {
+							background: #000; color: #fff; padding: 10px 22px;
+							border-radius: 50px; font-size: 0.85rem; font-weight: 700;
+							border: 2px solid #000;
+							}
+							.btn-register:hover { background: #fff; color: #000; }
+							.btn-account {
+							background: transparent; color: #000; border: 2px solid #000;
+							padding: 10px 22px; border-radius: 50px; font-size: 0.85rem; font-weight: 700;
+							display: flex; align-items: center; gap: 8px;
+							}
+
+							/* --- NOTIFICACIONES --- */
+							.flash-container {
+							max-width: 1200px;
+							width: 90%;
+							margin: 20px auto 0 auto;
+							}
+							.alert-flash {
+							padding: 15px 20px;
+							border-radius: 12px;
+							text-align: center;
+							font-weight: 400;
+							font-size: 0.9rem;
+							box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+							margin-bottom: 10px;
+							}
+							.alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+							.alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+							.alert-info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+							/* HERO/BANNER */
+							.hero-banner {
+							background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+							url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1470&auto=format&fit=crop');
+							background-size: cover;
+							background-position: center;
+							border-radius: 25px;
+							margin: 20px auto 30px auto;
+							padding: 80px 20px;
+							text-align: center;
+							color: white;
+							box-shadow: 0 1rem 3rem rgba(0,0,0,0.175);
+							max-width: 1200px;
+							width: 90%;
+							}
+							.hero-title { font-family: 'Playfair Display', serif; font-size: 3.5rem; margin-bottom: 10px; }
+							.hero-subtitle { text-transform: uppercase; letter-spacing: 3px; font-weight: 300; margin-bottom: 30px; }
+
+							@media (max-width: 768px) {
+							.hero-title { font-size: 2.2rem; }
+							.hero-subtitle { font-size: 0.8rem; }
+							}
+
+							.btn-hero {
+							display: inline-block;
+							padding: 12px 35px;
+							border: 1px solid white;
+							color: white;
+							font-weight: 700;
+							text-transform: uppercase;
+							font-size: 0.9rem;
+							}
+							.btn-hero:hover { background: white; color: black; }
+
+							/* CATÁLOGO */
+							.catalog-container { padding: 30px 0 50px 0; }
+							.product-grid {
+							display: grid;
+							grid-template-columns: 1fr;
+							gap: 25px;
+							}
+							@media (min-width: 600px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+							@media (min-width: 900px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+							@media (min-width: 1100px) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
+
+							.product-card {
+							background: #fff; border-radius: 15px; overflow: hidden;
+							box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s;
+							position: relative;
+							display: flex;
+							flex-direction: column;
+							}
+							.product-card:hover { transform: translateY(-10px); }
+
+							.badge-offer {
+							position: absolute;
+							top: 15px;
+							right: 15px;
+							background: #dc3545;
+							color: white;
+							padding: 5px 12px;
+							border-radius: 50px;
+							font-weight: 700;
+							font-size: 0.75rem;
+							z-index: 10;
+							}
+
+							.product-img { width: 100%; height: 280px; object-fit: cover; border-bottom: 1px solid #eee; }
+							.product-details { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+							.product-price { color: #007bff; font-weight: 700; font-size: 1.2rem; margin: 10px 0; }
+							.price-old { color: #6c757d; text-decoration: line-through; font-size: 0.85rem; margin-right: 8px; }
+							.price-new { color: #dc3545; font-weight: 700; font-size: 1.2rem; }
+
+							/* --- BOTÓN CENTRADO CON ICONO --- */
+							.btn-add {
+							background: #000; color: #fff; border: none; width: 100%;
+							height: 45px;
+							line-height: 45px;
+							padding: 0;
+							font-weight: 700; text-transform: uppercase; cursor: pointer;
+							margin-top: 10px; border-radius: 8px;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							gap: 10px; /* Espacio entre icono y texto */
+							box-sizing: border-box;
+							font-size: 0.85rem;
+							}
+							.btn-add:hover { background: #333; color: #fff; }
+
+							.form-select-admin {
+							width: 100%;
+							padding: 8px;
+							border-radius: 8px;
+							border: 1px solid #ddd;
+							font-family: 'Montserrat', sans-serif;
+							font-size: 0.8rem;
+							margin-bottom: 10px;
+							background-color: #f9f9f9;
+							}
+
+							footer { background: #000; color: #fff; padding: 50px 0; text-align: center; margin-top: 50px; }
+						</style>
+					</head>
+	<body>
+		<nav class="navbar-custom">
+			<div class="container">
+				<a class="navbar-brand" href="{{ url_for('home') }}">
+					MODA <span style="color: #007bff;">360</span>
+				</a>
+				<ul class="navbar-nav">
+					<li>
+						<a class="nav-link" href="{{ url_for('home') }}">Colección</a>
+					</li>
+					<li>
+						<a class="nav-link" href="#">Tendencias</a>
+					</li>
+					<li>
+						<a class="nav-link" href="#">Nosotros</a>
+					</li>
+				</ul>
+				<div class="auth-buttons">
+					{% if current_user.is_authenticated %}
+					<a href="{{ url_for('dashboard_cliente') }}" class="btn-account">
+						<i class="bi bi-person-circle"></i> Mi Cuenta
+					</a>
+					<a href="{{ url_for('logout') }}" class="nav-link" style="color: #dc3545; font-size: 0.75rem; margin-left: 10px;">Salir</a>
+					{% else %}
+					<a href="{{ url_for('login') }}" class="login-link">Iniciar Sesión</a>
+					<a href="{{ url_for('registro') }}" class="btn-register">Regístrate</a>
+					{% endif %}
+				</div>
+			</div>
+		</nav>
+
+		<div class="flash-container">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+			{% for category, message in messages %}
+			<div class="alert-flash alert-{{ category if category != 'message' else 'info' }}">
+				{{ message }}
+			</div>
+			{% endfor %}
+			{% endif %}
+			{% endwith %}
+		</div>
+
+		<header class="hero-banner">
+			<div style="max-width: 800px; margin: 0 auto;">
+				<h1 class="hero-title">Define tu Estilo</h1>
+				<p class="hero-subtitle">Calidad premium en cada prenda</p>
+				<a href="#catalogo" class="btn-hero">Ver Catálogo</a>
+			</div>
+		</header>
+
+		<main class="container catalog-container" id="catalogo">
+			<div class="product-grid">
+				{% for producto in productos %}
+				<div class="product-card">
+					{% if producto.descuento > 0 %}
+					<div class="badge-offer">OFERTA {{ producto.descuento }}%</div>
+					{% endif %}
+
+					<img src="{{ url_for('static', filename='uploads/productos/' + producto.imagen_url) if producto.imagen_url else url_for('static', filename='img/default.jpg') }}"
+						 class="product-img" alt="{{ producto.nombre }}">
+
+						<div class="product-details">
+							<div>
+								<h5 style="font-weight: 700; margin-bottom: 5px; font-size: 1rem;">{{ producto.nombre }}</h5>
+								<div class="mb-2">
+									{% if producto.descuento > 0 %}
+									<span class="price-old">${{ "{:,.2f}".format(producto.precio_venta) }}</span>
+									<span class="price-new">${{ "{:,.2f}".format(producto.precio_final) }}</span>
+									{% else %}
+									<p class="product-price">${{ "{:,.2f}".format(producto.precio_venta) }}</p>
+									{% endif %}
+								</div>
+								<p style="color: #6c757d; font-size: 0.75rem; margin-bottom: 15px;">Disponibles: {{ producto.stock_fisico }}</p>
+							</div>
+
+							{% if current_user.is_authenticated %}
+							<form action="{{ url_for('añadir_al_carrito', producto_id=producto.id) }}" method="POST">
+								{% if current_user.es_admin %}
+								<select name="cliente_id" class="form-select-admin" required="">
+									<option value="" selected="" disabled="">Asignar a cliente...</option>
+									{% for cliente in todos_los_clientes %}
+									<option value="{{ cliente.id }}">{{ cliente.first_name }} {{ cliente.last_name }} (@{{ cliente.username }})</option>
+									{% endfor %}
+								</select>
+								<button type="submit" class="btn-add" style="background: #007bff;">
+									<i class="bi bi-cart-plus"></i> Asignar Pedido
+								</button>
+								{% else %}
+								<button type="submit" class="btn-add">
+									<i class="bi bi-cart-plus"></i> Añadir al carrito
+								</button>
+								{% endif %}
+							</form>
+							{% else %}
+							<a href="{{ url_for('login') }}" class="btn-add">
+								<i class="bi bi-cart-plus"></i> Añadir al carrito
+							</a>
+							{% endif %}
+						</div>
+					</div>
+				{% else %}
+				<div style="grid-column: 1 / -1; text-align: center; padding: 60px 0; color: #6c757d; background: #fff; border-radius: 15px;">
+					<i class="bi bi-box-seam" style="font-size: 3rem; opacity: 0.3;"></i>
+					<p style="font-size: 1.1rem; margin-top: 15px;">Aún no hay artículos disponibles.</p>
+				</div>
+				{% endfor %}
+			</div>
+		</main>
+
+		<footer>
+			<div class="container" style="flex-direction: column; gap: 15px;">
+				<p style="font-weight: 700; font-size: 1.2rem; letter-spacing: 2px;">MODA 360</p>
+				<p style="opacity: 0.5; font-size: 0.8rem;">&copy; 2026 Moda 360. San Antonio del Táchira, Venezuela.</p>
+			</div>
+		</footer>
+	</body>
+</html>

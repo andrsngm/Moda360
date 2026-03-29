@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>Panel de Cliente | MODA 360</title>
+				<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+					<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+						<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+							<style>
+								body { font-family: 'Montserrat', sans-serif; background-color: #f4f7f6; color: #333; }
+								.sidebar { background-color: #1a1a1a; min-height: 100vh; color: white; padding-top: 20px; position: fixed; width: 240px; z-index: 1000; }
+								.nav-link { color: rgba(255,255,255,0.7); font-weight: 500; border-radius: 10px; margin: 5px 15px; transition: 0.3s; border: none; background: none; width: 85%; text-align: left; display: block; }
+								.nav-link:hover, .nav-link.active { background-color: rgba(255,255,255,0.1); color: white; }
+								.main-content { margin-left: 240px; padding: 40px; }
+								.stat-card { background: #fff; border: none; border-radius: 15px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); height: 100%; display: flex; flex-direction: column; justify-content: center; }
+								.card-deuda { border-left: 5px solid #dc3545; }
+								.card-envio { border-left: 5px solid #198754; }
+								.card-pedidos { background: #1a1a1a; color: #fff; }
+								.label-small { text-transform: uppercase; font-size: 0.7rem; font-weight: 700; color: #6c757d; letter-spacing: 1px; }
+								.table-container { background: #fff; border-radius: 15px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-top: 30px; }
+								.table thead th { border: none; color: #6c757d; font-size: 0.8rem; text-transform: uppercase; }
+								.badge-pendiente { background-color: #fff3cd; color: #856404; }
+								.badge-pagado { background-color: #d4edda; color: #155724; }
+								.badge-confirmar { background-color: #e9ecef; color: #495057; border: 1px dashed #ced4da; }
+								.btn-action { padding: 5px 15px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border-radius: 50px; transition: 0.3s; }
+								.modal-content { border-radius: 20px; border: none; }
+								.img-producto-mini { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+								.metodo-pago-card { background: #f8f9fa; border-radius: 12px; padding: 15px; border-left: 4px solid #0d6efd; }
+							</style>
+						</head>
+	<body>
+
+		<nav class="sidebar shadow">
+			<div class="position-sticky text-center">
+				<h4 class="fw-bold mb-4">
+					MODA <span class="text-primary">360</span>
+				</h4>
+				<ul class="nav flex-column text-start" id="v-pills-tab" role="tablist">
+					<li class="nav-item">
+						<button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab">
+							<i class="bi bi-speedometer2 me-2"></i> Mi Resumen
+						</button>
+					</li>
+					<li class="nav-item">
+						<button class="nav-link" id="v-pills-pagos-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pagos" type="button" role="tab">
+							<i class="bi bi-credit-card me-2"></i> Pagos y Cuotas
+						</button>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ url_for('home') }}">
+							<i class="bi bi-shop me-2"></i> Volver a Tienda
+						</a>
+					</li>
+					<li class="nav-item">
+						<hr class="mx-3 opacity-25">
+					</li>
+					<li class="nav-item">
+						<a href="{{ url_for('logout') }}" class="nav-link text-danger">
+							<i class="bi bi-box-arrow-left me-2"></i> Salir
+						</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="main-content">
+			<div class="tab-content" id="v-pills-tabContent">
+
+				<div class="tab-pane fade show active" id="v-pills-home" role="tabpanel">
+					<div class="d-flex justify-content-between align-items-end mb-5">
+						<div>
+							<h2 class="fw-bold m-0">Hola, {{ user.first_name }}</h2>
+							<p class="text-muted m-0">Bienvenido a tu panel de control exclusivo.</p>
+						</div>
+						<button class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNotificarPago">
+							<i class="bi bi-plus-lg me-2"></i>Notificar Pago
+						</button>
+					</div>
+
+					<div class="row g-4">
+						<div class="col-md-4">
+							<div class="stat-card card-deuda">
+								<span class="label-small">Deuda Total Acumulada</span>
+								<h2 class="fw-bold text-danger mt-2">$ {{ "{:,.2f}".format(user.deuda_total | default(0)) }}</h2>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="stat-card card-envio">
+								<span class="label-small">Tiempo de Entrega</span>
+								<h2 class="fw-bold mt-2">
+									<i class="bi bi-truck me-2"></i>12-72h
+								</h2>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="stat-card card-pedidos">
+								<span class="label-small">Actividad</span>
+								<h2 class="fw-bold mt-2">{{ pedidos|length }} Pedidos</h2>
+							</div>
+						</div>
+					</div>
+
+					<div class="table-container">
+						<h5 class="fw-bold mb-4">Historial de Compras y Deudas</h5>
+						<div class="table-responsive">
+							<table class="table align-middle">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Fecha</th>
+										<th>Total Pedido</th>
+										<th>Saldo Pendiente</th>
+										<th>Estado</th>
+										<th class="text-center">Acciones</th>
+										<th class="text-end">Detalle</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for pedido in pedidos %}
+									<tr>
+										<td class="fw-bold">#{{ pedido.id }}</td>
+										<td>{{ pedido.fecha_creacion.strftime('%d/%m/%Y') if pedido.fecha_creacion else 'Hoy' }}</td>
+										<td class="fw-bold">${{ "{:,.2f}".format(pedido.total_a_pagar | default(0)) }}</td>
+										<td class="text-danger fw-bold">${{ "{:,.2f}".format(pedido.saldo_pendiente | default(0)) }}</td>
+										<td>
+											{% if pedido.estado == 'por confirmar' %}
+											<span class="badge badge-confirmar rounded-pill px-3">Esperando tu confirmación</span>
+											{% elif pedido.saldo_pendiente <= 0 %}
+											<span class="badge badge-pagado rounded-pill px-3">Pagado</span>
+											{% else %}
+											<span class="badge badge-pendiente rounded-pill px-3">{{ pedido.estado|capitalize }}</span>
+											{% endif %}
+										</td>
+										<td class="text-center">
+											{% if pedido.estado == 'por confirmar' %}
+											<div class="d-flex justify-content-center gap-2">
+												<form action="{{ url_for('confirmar_pedido', pedido_id=pedido.id) }}" method="POST">
+													<button type="submit" class="btn btn-success btn-action">
+														<i class="bi bi-check-lg"></i> Confirmar
+													</button>
+												</form>
+												<form action="{{ url_for('eliminar_pedido', pedido_id=pedido.id) }}" method="POST">
+													<button type="submit" class="btn btn-danger btn-action" onclick="return confirm('¿Quitar pedido?')">
+														<i class="bi bi-x-lg"></i> Quitar
+													</button>
+												</form>
+											</div>
+											{% elif pedido.saldo_pendiente > 0 %}
+											<button class="btn btn-outline-primary btn-action" data-bs-toggle="modal" data-bs-target="#modalNotificarPago" onclick="document.getElementById('pedido_pago_id').value='{{ pedido.id }}'">
+												<i class="bi bi-cash-stack"></i> Abonar
+											</button>
+											{% else %}
+											<span class="text-muted small">Validado</span>
+											{% endif %}
+										</td>
+										<td class="text-end">
+											<button class="btn btn-dark btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalPedido{{ pedido.id }}">
+												<i class="bi bi-eye"></i>
+											</button>
+										</td>
+									</tr>
+
+									<div class="modal fade" id="modalPedido{{ pedido.id }}" tabindex="-1" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content border-0 shadow">
+												<div class="modal-header border-0 pb-0">
+													<h5 class="fw-bold">Detalle del Pedido #{{ pedido.id }}</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+												</div>
+												<div class="modal-body p-4">
+													<div class="list-group list-group-flush">
+														{% for item in pedido.items %}
+														<div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
+															<div class="d-flex align-items-center">
+																<img src="{{ url_for('static', filename='uploads/productos/' + item.producto.imagen_url) }}" class="img-producto-mini me-3">
+																	<div>
+																		<h6 class="mb-0 fw-bold">{{ item.producto.nombre }}</h6>
+																		<small class="text-muted">{{ item.cantidad }} x ${{ "{:,.2f}".format(item.precio_unitario) }}</small>
+																	</div>
+																</div>
+															<span class="fw-bold text-dark">${{ "{:,.2f}".format(item.cantidad * item.precio_unitario) }}</span>
+														</div>
+														{% endfor %}
+													</div>
+													<hr>
+														<div class="d-flex justify-content-between mb-2">
+															<span class="fw-bold">Total de la Orden:</span>
+															<span class="fw-bold fs-5 text-primary">${{ "{:,.2f}".format(pedido.total_a_pagar) }}</span>
+														</div>
+													</div>
+												<div class="modal-footer border-0 pt-0">
+													<button type="button" class="btn btn-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									{% else %}
+									<tr>
+										<td colspan="7" class="text-center py-5">
+											<p class="text-muted mt-2">No tienes pedidos aún.</p>
+										</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="modal fade" id="modalNotificarPago" tabindex="-1" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered">
+						<div class="modal-content border-0 shadow">
+							<div class="modal-header bg-dark text-white border-0 pb-3">
+								<h5 class="fw-bold m-0">Notificar un Pago</h5>
+								<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+							</div>
+							<form action="{{ url_for('registrar_pago') }}" method="POST" enctype="multipart/form-data">
+								<div class="modal-body p-4">
+									<div class="mb-3">
+										<label class="label-small mb-1">Seleccionar Pedido</label>
+										<select name="pedido_id" id="pedido_pago_id" class="form-select rounded-pill" required="">
+											{% for pedido in pedidos if pedido.saldo_pendiente > 0 %}
+											<option value="{{ pedido.id }}">Pedido #{{ pedido.id }} - Debe: ${{ "{:,.2f}".format(pedido.saldo_pendiente) }}</option>
+											{% endfor %}
+										</select>
+									</div>
+									<div class="row">
+										<div class="col-md-6 mb-3">
+											<label class="label-small mb-1">Monto Pagado ($)</label>
+											<input type="number" step="0.01" name="monto" class="form-control rounded-pill" required="">
+                                    </div>
+										<div class="col-md-6 mb-3">
+											<label class="label-small mb-1">Referencia</label>
+											<input type="text" name="referencia" class="form-control rounded-pill" placeholder="Referencia bancaria" required="">
+                                    </div>
+									</div>
+									<div class="mb-3">
+										<label class="label-small mb-1">Capture de Pantalla / Comprobante</label>
+										<input type="file" name="comprobante" class="form-control" accept="image/*" required="">
+                                </div>
+								</div>
+								<div class="modal-footer border-0">
+									<button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+									<button type="submit" class="btn btn-primary rounded-pill px-4">Enviar Notificación</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="tab-pane fade" id="v-pills-pagos" role="tabpanel">
+					<h3 class="fw-bold mb-4">
+						Información de <span class="text-primary">Pagos</span>
+					</h3>
+					<div class="row g-4">
+						<div class="col-md-5">
+							<div class="table-container mt-0">
+								<h5 class="fw-bold mb-3">Métodos de Pago</h5>
+								<div class="metodo-pago-card mb-3">
+									<strong class="text-dark">Pago Móvil</strong>
+									<br>
+										<small class="text-muted">Banco: Banesco | Tel: 0412-1234567 | RIF: J-12345678</small>
+									</div>
+								<div class="metodo-pago-card">
+									<strong class="text-dark">Transferencia Zelle</strong>
+									<br>
+										<small class="text-muted">Correo: pagos@moda360.com</small>
+									</div>
+							</div>
+						</div>
+						<div class="col-md-7">
+							<div class="table-container mt-0">
+								<h5 class="fw-bold mb-3">Historial de Cuotas</h5>
+								<div class="table-responsive">
+									<table class="table table-sm">
+										<thead>
+											<tr class="text-muted small">
+												<th>FECHA</th>
+												<th>PEDIDO</th>
+												<th class="text-end">ABONADO</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for pedido in pedidos if pedido.monto_pagado > 0 %}
+											<tr>
+												<td>{{ pedido.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+												<td class="fw-bold">#{{ pedido.id }}</td>
+												<td class="text-success fw-bold text-end">+ ${{ "{:,.2f}".format(pedido.monto_pagado) }}</td>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>
