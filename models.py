@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     telefono = db.Column(db.String(20))
+    es_admin = db.Column(db.Boolean, default=False) # <--- ESTO ES VITAL
     
     # Rol de administrador
     es_admin = db.Column(db.Boolean, default=False)
