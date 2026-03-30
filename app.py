@@ -11,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 app = Flask(__name__)
 
 # --- CONFIGURACIÓN DE SEGURIDAD ---
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "tu_llave_secreta_aqui")
+app.config['SECRET_KEY'] = 'Moda360'
 
 # --- CONFIGURACIÓN DE BASE DE DATOS (MODIFICADA PARA RENDER) ---
 # 1. Intentar obtener la URL de Render. Si no existe, usar el archivo local.
