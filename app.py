@@ -396,7 +396,9 @@ def registrar_pago_admin(user_id):
         
     return redirect(url_for('dashboard_admin'))
 
+# --- BLOQUE DE INICIO PARA RENDER ---
 if __name__ == '__main__':
+    # Esto crea las tablas si no existen antes de arrancar
     with app.app_context():
         db.create_all()
     app.run(debug=True)
