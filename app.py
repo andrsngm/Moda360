@@ -10,8 +10,18 @@ from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'tu_llave_secreta_aqui'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///moda360.db'
+
+# --- CONFIGURACIÓN DE BASE DE DATOS (MODIFICADA PARA RENDER) ---
+# 1. Intentar obtener la URL de Render. Si no existe, usar el archivo local.
+uri = os.environ.get("DATABASE_URL", "sqlite:///moda360.db")
+
+# 2. Corrección de compatibilidad (Render usa 'postgres://', pero SQLAlchemy necesita 'postgresql://')
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# ---------------------------------------------------------------
 
 # --- CONFIGURACIÓN DE CARGA DE IMÁGENES ---
 UPLOAD_FOLDER = os.path.join('static', 'uploads', 'productos')
