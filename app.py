@@ -58,13 +58,39 @@ login_manager.login_view = 'login'
 login_manager.login_message = "Por favor inicia sesión para acceder."
 login_manager.login_message_category = "danger"
 
-# --- BLOQUE CRÍTICO: CREACIÓN DE TABLAS EN RENDER ---
+# --- BLOQUE CRÍTICO: CREACIÓN DE TABLAS Y ADMIN AUTOMÁTICO ---
 with app.app_context():
     try:
         db.create_all()
+        
+        # Lógica para crear al Administrador Anderson automáticamente
+        admin_tel = "0416-5971485"
+        admin_existente = User.query.filter_by(username=admin_tel).first()
+        
+        if not admin_existente:
+            hashed_pw = bcrypt.generate_password_hash("Usuario-Administrador1").decode('utf-8')
+            nuevo_admin = User(
+                username=admin_tel,
+                first_name="Anderson",
+                last_name="Admin",
+                telefono=admin_tel,
+                password=hashed_pw,
+                es_admin=True,
+                email="admin@moda360.com"
+            )
+            db.session.add(nuevo_admin)
+            db.session.commit()
+            print(f"✅ Administrador Anderson ({admin_tel}) creado exitosamente.")
+        else:
+            # Si el usuario ya existe pero no es admin, lo actualizamos
+            if not admin_existente.es_admin:
+                admin_existente.es_admin = True
+                db.session.commit()
+                print(f"✅ Rango de administrador otorgado a {admin_existente.first_name}.")
+                
         print("Infraestructura de base de datos verificada/creada.")
     except Exception as e:
-        print(f"Nota sobre la base de datos: {e}")
+        print(f"Nota sobre la inicialización: {e}")
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -309,7 +335,6 @@ def nuevo_producto():
 @app.route("/registrar_pago", methods=['POST'])
 @login_required
 def registrar_pago():
-    """El cliente envía el comprobante, pero NO se descuenta de la deuda aún."""
     try:
         pedido_id = request.form.get('pedido_id')
         monto = float(request.form.get('monto') or 0)
@@ -325,11 +350,9 @@ def registrar_pago():
             flash("Operación no permitida.", "danger")
             return redirect(url_for('dashboard_cliente'))
 
-        # Guardar archivo con nombre único
         filename = secure_filename(f"REF_{referencia}_{file.filename}")
         file.save(os.path.join(app.config['PAYMENTS_FOLDER'], filename))
         
-        # Crear registro de pago pendiente
         nuevo_pago = PagoNotificado(
             pedido_id=pedido.id,
             usuario_id=current_user.id,
@@ -341,7 +364,7 @@ def registrar_pago():
         db.session.add(nuevo_pago)
         db.session.commit()
         
-        flash(f'Notificación enviada. Espera a que el administrador valide la referencia {referencia}.', 'info')
+        flash(f'Notificación enviada. Espera validación.', 'info')
 
     except Exception as e:
         db.session.rollback()
@@ -352,7 +375,6 @@ def registrar_pago():
 @app.route("/admin/validar-pago/<int:pago_id>/<string:accion>", methods=['POST'])
 @login_required
 def validar_pago(pago_id, accion):
-    """El administrador aprueba o rechaza el pago. Solo 'aprobar' descuenta la deuda."""
     if not current_user.es_admin:
         return jsonify({"error": "No autorizado"}), 403
     
@@ -361,9 +383,8 @@ def validar_pago(pago_id, accion):
     try:
         if accion == 'aprobar':
             pago.estado = 'aprobado'
-            # AQUÍ ES DONDE REALMENTE SE ACTUALIZA LA DEUDA
             pago.pedido.monto_pagado += pago.monto
-            flash(f"Pago de {pago.usuario.first_name} aprobado con éxito.", "success")
+            flash(f"Pago de {pago.usuario.first_name} aprobado.", "success")
         elif accion == 'rechazar':
             pago.estado = 'rechazado'
             flash(f"Pago de {pago.usuario.first_name} rechazado.", "warning")
@@ -378,7 +399,6 @@ def validar_pago(pago_id, accion):
 @app.route("/admin/registrar-pago-manual/<int:user_id>", methods=['POST'])
 @login_required
 def registrar_pago_admin(user_id):
-    """Pago manual directo (efectivo, etc.) realizado por el admin"""
     if not current_user.es_admin:
         return jsonify({"error": "No autorizado"}), 403
     
@@ -396,7 +416,7 @@ def registrar_pago_admin(user_id):
                     monto -= pago_aplicado
             
             db.session.commit()
-            flash('Pago manual procesado correctamente.', 'success')
+            flash('Pago manual procesado.', 'success')
         else:
             flash('Cliente no encontrado.', 'warning')
             
