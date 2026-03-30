@@ -115,15 +115,24 @@ def registro():
         return redirect(url_for('dashboard_admin' if current_user.es_admin else 'dashboard_cliente'))
     
     if request.method == 'POST':
+        telefono = request.form['telefono']
+        
+        # --- MODIFICACIÓN: VERIFICAR SI EL USUARIO YA EXISTE ---
+        user_exists = User.query.filter_by(username=telefono).first()
+        if user_exists:
+            flash('Este número de teléfono ya está registrado. Intenta iniciar sesión.', 'warning')
+            return redirect(url_for('login'))
+        # ------------------------------------------------------
+
         try:
             hashed_pw = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
             user = User(
-                username=request.form['telefono'],
+                username=telefono,
                 email=request.form.get('email', ''),
                 password=hashed_pw,
                 first_name=request.form['nombre'],
                 last_name=request.form['apellido'],
-                telefono=request.form['telefono'],
+                telefono=telefono,
                 es_admin=False
             )
             db.session.add(user)
